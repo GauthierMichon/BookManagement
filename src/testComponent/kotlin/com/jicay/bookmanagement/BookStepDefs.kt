@@ -2,8 +2,10 @@ package com.jicay.bookmanagement
 
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import assertk.assertions.isNotNull
 import io.cucumber.java.Before
 import io.cucumber.java.Scenario
+import io.cucumber.java.en.Given
 import io.cucumber.java.en.Then
 import io.cucumber.java.en.When
 import io.restassured.RestAssured
@@ -66,6 +68,56 @@ class BookStepDefs {
         assertThat(lastBookResult.extract().body().jsonPath().prettify())
                 .isEqualTo(JsonPath(expectedResponse).prettify())
     }
+
+    @Given("there is a book with name {string} written by {string} and not reserved")
+    fun createUnreservedBook(title: String, author: String) {
+        given()
+                .contentType(ContentType.JSON)
+                .and()
+                .body(
+                        """
+                {
+                  "name": "$title",
+                  "author": "$author",
+                  "reserved": false
+                }
+                """.trimIndent()
+                )
+                .`when`()
+                .post("/books")
+                .then()
+                .statusCode(201)
+    }
+
+    @When("the user reserves the book with name {string}")
+    fun reserveBook(bookName: String) {
+        val response = given()
+                .`when`()
+                .post("/books/$bookName/reserve")
+                .then()
+                .statusCode(200)
+                .extract().response().asString()
+        println("Response from /books/$bookName/reserve: $response")
+    }
+
+    @Then("the book with name {string} should be reserved")
+    fun checkBookReserved(bookName: String) {
+        lastBookResult = given()
+                .`when`()
+                .get("/books")
+                .then()
+                .statusCode(200)
+
+        val books = lastBookResult.extract().body().jsonPath().getList("", Map::class.java)
+
+        // Find the book with the specified name
+        val book = books.firstOrNull { it["name"] == bookName }
+
+        // Assertions
+        assertThat(book).isNotNull()
+        assertThat(book!!["reserved"]).isEqualTo(true)
+    }
+
 
     companion object {
         lateinit var lastBookResult: ValidatableResponse
