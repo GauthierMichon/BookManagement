@@ -17,6 +17,23 @@ class BookUseCase(
     }
 
     fun reserveBook(bookName: String) {
-        bookPort.reserveBook(bookName)
+        val books = bookPort.getAllBooks()
+
+        for (book in books) {
+            if (book.name == bookName) {
+                if (book.reserved) {
+                    throw BookAlreadyReservedException("The book '$bookName' is already reserved.")
+                } else {
+                    book.reserved = true// Suppose que le port de réservation prend un ID plutôt qu'un nom
+                    return
+                }
+            }
+        }
+
+        throw BookNotFoundException("Book with name '$bookName' not found.")
     }
 }
+
+class BookAlreadyReservedException(message: String) : RuntimeException(message)
+
+class BookNotFoundException(message: String) : RuntimeException(message)

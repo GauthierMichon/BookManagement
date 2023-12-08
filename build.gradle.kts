@@ -78,6 +78,7 @@ dependencies {
     testImplementation("io.mockk:mockk:1.13.8")
     testImplementation("com.willowtreeapps.assertk:assertk:0.27.0")
     testImplementation("info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.15.0")
+    testImplementation("com.willowtreeapps.assertk:assertk-jvm:0.24")
 
     testIntegrationImplementation("io.mockk:mockk:1.13.8")
     testIntegrationImplementation("com.willowtreeapps.assertk:assertk:0.27.0")

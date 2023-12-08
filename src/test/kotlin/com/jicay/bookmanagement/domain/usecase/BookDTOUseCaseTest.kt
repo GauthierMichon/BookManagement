@@ -3,6 +3,8 @@ package com.jicay.bookmanagement.domain.usecase
 import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
+import assertk.assertions.isFailure
+import assertk.assertions.messageContains
 import com.jicay.bookmanagement.domain.model.Book
 import com.jicay.bookmanagement.domain.port.BookPort
 import io.mockk.every
@@ -49,29 +51,49 @@ class BookDTOUseCaseTest {
         verify(exactly = 1) { bookPort.createBook(book) }
     }
 
-    /*@Test
-    fun `reserve book should reserve the book and return true if not reserved before`() {
+    @Test
+    fun `reserve book when already reserved should return false`() {
+        every { bookPort.getAllBooks() } returns listOf(
+            Book("Les Misérables", "Victor Hugo", false),
+            Book("Hamlet", "William Shakespeare", false)
+        )
         val bookName = "Les Misérables"
-        every { bookPort.isBookReserved(bookName) } returns false
-        justRun { bookPort.reserveBook(bookName) }
 
-        val result = bookUseCase.reserveBook(bookName)
+        bookUseCase.reserveBook(bookName)
 
-        assertThat(result).isEqualTo(true)
-        verify(exactly = 1) { bookPort.isBookReserved(bookName) }
-        verify(exactly = 1) { bookPort.reserveBook(bookName) }
+        val res = bookUseCase.getAllBooks()
+        assertThat(res).containsExactly(
+                Book("Hamlet", "William Shakespeare", false),
+                Book("Les Misérables", "Victor Hugo", true)
+        )
+
     }
 
     @Test
-    fun `reserve book should not reserve the book and return false if already reserved`() {
+    fun `reserve book when already reserved should throw BookAlreadyReservedException`() {
+        every { bookPort.getAllBooks() } returns listOf(
+                Book("Les Misérables", "Victor Hugo", false),
+                Book("Hamlet", "William Shakespeare", false)
+        )
         val bookName = "Les Misérables"
-        every { bookPort.isBookReserved(bookName) } returns true
 
-        val result = bookUseCase.reserveBook(bookName)
+        bookUseCase.reserveBook(bookName)
 
-        assertThat(result).isEqualTo(false)
-        verify(exactly = 1) { bookPort.isBookReserved(bookName) }
-        verify(exactly = 0) { bookPort.reserveBook(any()) }
-    }*/
+        assertThat {
+            bookUseCase.reserveBook(bookName)
+        }.isFailure().messageContains("The book '$bookName' is already reserved.")
+    }
 
+    @Test
+    fun `reserve book when book is not found should throw BookNotFoundException`() {
+        every { bookPort.getAllBooks() } returns listOf(
+                Book("Les Misérables", "Victor Hugo", false),
+                Book("Hamlet", "William Shakespeare", false)
+        )
+        val bookName = "Harry Potter"
+
+        assertThat {
+            bookUseCase.reserveBook(bookName)
+        }.isFailure().messageContains("Book with name '$bookName' not found.")
+    }
 }
