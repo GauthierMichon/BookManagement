@@ -26,10 +26,11 @@ class BookController(
     }
 
     @CrossOrigin
-    @PostMapping("/{bookId}/reserve")
+    @PostMapping("/{bookName}/reserve")
     @ResponseStatus(HttpStatus.OK)
-    fun reserveBook(@PathVariable bookId: Long): Boolean {
-        return bookUseCase.reserveBook(bookId)
+    fun reserveBook(@PathVariable bookName: String): Boolean {
+        return bookUseCase.reserveBook(bookName)
     }
+
 
 }

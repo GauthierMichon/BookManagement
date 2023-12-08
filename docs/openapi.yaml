@@ -3,13 +3,13 @@ info:
   title: OpenAPI definition
   version: v0
 servers:
-- url: http://localhost:8080
-  description: Generated server url
+  - url: http://localhost:8080
+    description: Generated server url
 paths:
   /books:
     get:
       tags:
-      - book-controller
+        - book-controller
       operationId: getAllBooks
       responses:
         "200":
@@ -22,7 +22,7 @@ paths:
                   $ref: '#/components/schemas/BookDTO'
     post:
       tags:
-      - book-controller
+        - book-controller
       operationId: addBook
       requestBody:
         content:
@@ -33,6 +33,20 @@ paths:
       responses:
         "201":
           description: Created
+  /books/{bookName}/reserve:
+    post:
+      tags:
+        - book-controller
+      operationId: reserveBook
+      parameters:
+        - name: bookName
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
 components:
   schemas:
     BookDTO:

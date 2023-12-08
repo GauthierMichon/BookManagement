@@ -27,22 +27,20 @@ class BookDAO(private val namedParameterJdbcTemplate: NamedParameterJdbcTemplate
             ))
     }
 
-    override fun reserveBook(bookId: Long): Boolean {
-        val reserved = isBookReserved(bookId)
+    override fun reserveBook(bookName: String): Boolean {
+        val reserved = isBookReserved(bookName)
         if (!reserved) {
-            namedParameterJdbcTemplate.update(
-                    "UPDATE BOOK SET reserved = true WHERE id = :id",
-                    mapOf("id" to bookId)
-            )
+            val sql = "UPDATE BOOK SET reserved = true WHERE title = :title"
+            val params = mapOf("title" to bookName)
+            namedParameterJdbcTemplate.update(sql, params)
         }
         return !reserved
     }
 
-    override fun isBookReserved(bookId: Long): Boolean {
-        return namedParameterJdbcTemplate.queryForObject(
-                "SELECT reserved FROM BOOK WHERE id = :id",
-                mapOf("id" to bookId),
-                Boolean::class.java
-        ) ?: false
+    override fun isBookReserved(bookName: String): Boolean {
+        val sql = "SELECT reserved FROM BOOK WHERE title = :title"
+        val params = mapOf("title" to bookName)
+        return namedParameterJdbcTemplate.queryForObject(sql, params, Boolean::class.java) ?: false
     }
+
 }
