@@ -1,5 +1,7 @@
 package com.jicay.bookmanagement.domain.usecase
 
+import com.jicay.bookmanagement.domain.exception.BookAlreadyReservedException
+import com.jicay.bookmanagement.domain.exception.BookNotFoundException
 import com.jicay.bookmanagement.domain.model.Book
 import com.jicay.bookmanagement.domain.port.BookPort
 
@@ -33,7 +35,3 @@ class BookUseCase(
         throw BookNotFoundException("Book with name '$bookName' not found.")
     }
 }
-
-class BookAlreadyReservedException(message: String) : RuntimeException(message)
-
-class BookNotFoundException(message: String) : RuntimeException(message)
