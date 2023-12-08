@@ -2,6 +2,7 @@ package com.jicay.bookmanagement.domain.usecase
 
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.isEqualTo
 import com.jicay.bookmanagement.domain.model.Book
 import com.jicay.bookmanagement.domain.port.BookPort
 import io.mockk.every
@@ -47,4 +48,30 @@ class BookDTOUseCaseTest {
 
         verify(exactly = 1) { bookPort.createBook(book) }
     }
+
+    /*@Test
+    fun `reserve book should reserve the book and return true if not reserved before`() {
+        val bookName = "Les Misérables"
+        every { bookPort.isBookReserved(bookName) } returns false
+        justRun { bookPort.reserveBook(bookName) }
+
+        val result = bookUseCase.reserveBook(bookName)
+
+        assertThat(result).isEqualTo(true)
+        verify(exactly = 1) { bookPort.isBookReserved(bookName) }
+        verify(exactly = 1) { bookPort.reserveBook(bookName) }
+    }
+
+    @Test
+    fun `reserve book should not reserve the book and return false if already reserved`() {
+        val bookName = "Les Misérables"
+        every { bookPort.isBookReserved(bookName) } returns true
+
+        val result = bookUseCase.reserveBook(bookName)
+
+        assertThat(result).isEqualTo(false)
+        verify(exactly = 1) { bookPort.isBookReserved(bookName) }
+        verify(exactly = 0) { bookPort.reserveBook(any()) }
+    }*/
+
 }

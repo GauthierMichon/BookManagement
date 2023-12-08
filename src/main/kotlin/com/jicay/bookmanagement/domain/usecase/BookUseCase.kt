@@ -16,7 +16,7 @@ class BookUseCase(
         bookPort.createBook(book)
     }
 
-    fun reserveBook(bookName: String): Boolean {
-        return bookPort.reserveBook(bookName)
+    fun reserveBook(bookName: String) {
+        bookPort.reserveBook(bookName)
     }
 }
