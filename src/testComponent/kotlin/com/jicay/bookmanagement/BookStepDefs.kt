@@ -23,32 +23,33 @@ class BookStepDefs {
         RestAssured.enableLoggingOfRequestAndResponseIfValidationFails()
     }
 
-    @When("the user creates the book {string} written by {string}")
-    fun createBook(title: String, author: String) {
+    @When("the user creates the book {string} written by {string} with reserved {boolean}")
+    fun createBook(title: String, author: String, reserved: Boolean) {
         given()
-            .contentType(ContentType.JSON)
-            .and()
-            .body(
-                """
+                .contentType(ContentType.JSON)
+                .and()
+                .body(
+                        """
                     {
                       "name": "$title",
-                      "author": "$author"
+                      "author": "$author",
+                      "reserved": $reserved
                     }
                 """.trimIndent()
-            )
-            .`when`()
-            .post("/books")
-            .then()
-            .statusCode(201)
+                )
+                .`when`()
+                .post("/books")
+                .then()
+                .statusCode(201)
     }
 
     @When("the user get all books")
     fun getAllBooks() {
         lastBookResult = given()
-            .`when`()
-            .get("/books")
-            .then()
-            .statusCode(200)
+                .`when`()
+                .get("/books")
+                .then()
+                .statusCode(200)
     }
 
     @Then("the list should contains the following books in the same order")
@@ -56,16 +57,14 @@ class BookStepDefs {
         val expectedResponse = payload.joinToString(separator = ",", prefix = "[", postfix = "]") { line ->
             """
                 ${
-                    line.entries.joinToString(separator = ",", prefix = "{", postfix = "}") {
-                        """"${it.key}": "${it.value}""""
-                    }
+                line.entries.joinToString(separator = ",", prefix = "{", postfix = "}") {
+                    """"${it.key}": ${if (it.key == "reserved") it.value.toString() else "\"${it.value}\""}"""
                 }
+            }
             """.trimIndent()
-
         }
         assertThat(lastBookResult.extract().body().jsonPath().prettify())
-            .isEqualTo(JsonPath(expectedResponse).prettify())
-
+                .isEqualTo(JsonPath(expectedResponse).prettify())
     }
 
     companion object {
