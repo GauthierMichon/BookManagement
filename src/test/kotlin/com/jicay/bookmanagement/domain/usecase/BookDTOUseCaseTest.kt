@@ -52,7 +52,7 @@ class BookDTOUseCaseTest {
     }
 
     @Test
-    fun `reserve book when already reserved should return false`() {
+    fun `reserve book`() {
         every { bookPort.getAllBooks() } returns listOf(
             Book("Les Misérables", "Victor Hugo", false),
             Book("Hamlet", "William Shakespeare", false)

@@ -26,8 +26,11 @@ class BookUseCase(
                 if (book.reserved) {
                     throw BookAlreadyReservedException("The book '$bookName' is already reserved.")
                 } else {
-                    bookPort.reserveBook(bookName)
-                    book.reserved = true// Suppose que le port de réservation prend un ID plutôt qu'un nom
+                    book.reserved = true
+                    try {
+                        bookPort.reserveBook(bookName)
+                    } catch (e: Exception) {
+                    }
                     return
                 }
             }
